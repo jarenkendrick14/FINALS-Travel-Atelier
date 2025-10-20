@@ -1,0 +1,44 @@
+[
+  {
+    "id": 1,
+    "name": "Gardens by the Bay",
+    "location": "Singapore",
+    "description": "A stunning nature park spanning 101 hectares in the heart of Singapore.",
+    "imageUrl": "gardens-by-the-bay.jpg"
+  },
+  {
+    "id": 2,
+    "name": "Sydney Opera House",
+    "location": "Sydney, Australia",
+    "description": "A multi-venue performing arts centre at Sydney Harbour in Sydney, Australia.",
+    "imageUrl": "sydney-opera.jpg"
+  },
+  {
+    "id": 3,
+    "name": "The Louvre",
+    "location": "Paris, France",
+    "description": "The world's largest art museum and a historic monument in Paris, France.",
+    "imageUrl": "louvre.jpg"
+  },
+  {
+    "id": 4,
+    "name": "Itsukushima Shrine",
+    "location": "Hiroshima, Japan",
+    "description": "A Shinto shrine on the island of Itsukushima, best known for its 'floating' torii gate.",
+    "imageUrl": "torii-gate.jpg"
+  },
+  {
+    "id": 5,
+    "name": "Leaning Tower of Pisa",
+    "location": "Pisa, Italy",
+    "description": "The freestanding bell tower of the cathedral of the Italian city of Pisa.",
+    "imageUrl": "pisa.jpg"
+  },
+  {
+    "id": 6,
+    "name": "Taj Mahal",
+    "location": "Agra, India",
+    "description": "An immense mausoleum of white marble, built in Agra between 1631 and 1648.",
+    "imageUrl": "taj-mahal.jpg"
+  }
+]

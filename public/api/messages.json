@@ -1,0 +1,23 @@
+[
+  {
+    "id": 201,
+    "name": "Alice Johnson",
+    "email": "alice.j@example.com",
+    "message": "I have a question about the booking process for the Paris trip. Can you provide more details?",
+    "dateSent": "2023-10-28T10:30:00Z"
+  },
+  {
+    "id": 202,
+    "name": "Bob Williams",
+    "email": "bob.w@example.com",
+    "message": "Interested in a custom tour package for Japan. Is this something you offer?",
+    "dateSent": "2023-10-29T14:00:00Z"
+  },
+  {
+    "id": 203,
+    "name": "Charlie Brown",
+    "email": "charlie.b@example.com",
+    "message": "Thank you for the amazing trip to Italy! Everything was perfect. Highly recommended.",
+    "dateSent": "2023-11-01T09:15:00Z"
+  }
+]
