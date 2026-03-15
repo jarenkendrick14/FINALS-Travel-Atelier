@@ -23,7 +23,7 @@
           class="destinations-grid"
           appear
         >
-          <div v-for="(dest, index) in filteredDestinations" :key="dest.id" class="card" :style="{'--i': index}">
+          <div v-for="(dest, index) in filteredDestinations" :key="dest.id" class="card" :style="{'--i': index}" @click="bookDestination(dest)">
             <div class="card-image-wrapper">
               <img :src="getImageUrl(dest.imageUrl)" :alt="dest.name" class="card-image" />
             </div>
@@ -31,6 +31,7 @@
               <h3>{{ dest.name }}</h3>
               <p>{{ dest.location }}</p>
               <p class="description">{{ dest.description }}</p>
+              <span class="card-cta">Book This Destination →</span>
             </div>
           </div>
         </TransitionGroup>
@@ -51,12 +52,17 @@
 
 <script setup>
 import { ref, onMounted, computed } from 'vue';
-import { RouterLink, useRoute } from 'vue-router'; // Import useRoute
+import { RouterLink, useRoute, useRouter } from 'vue-router';
 
 const allDestinations = ref([]);
 const searchTerm = ref('');
 const isLoading = ref(true);
 const route = useRoute();
+const router = useRouter();
+
+const bookDestination = (dest) => {
+  router.push({ path: '/bookhere', query: { destination: dest.name, location: dest.location } });
+};
 
 function getImageUrl(filename) {
   return new URL(`../assets/destinations/${filename}`, import.meta.url).href
@@ -173,6 +179,15 @@ const filteredDestinations = computed(() => {
   background-color: white;
   display: flex;
   flex-direction: column;
+  cursor: pointer;
+}
+
+.card-cta {
+  display: inline-block;
+  margin-top: 12px;
+  color: var(--yinmn-blue);
+  font-weight: 600;
+  font-size: 0.9rem;
 }
 
 .card:hover {

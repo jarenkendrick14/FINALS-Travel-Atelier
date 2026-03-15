@@ -61,6 +61,8 @@
             <input type="date" v-model="form.checkout" :min="form.checkin || undefined" required />
           </div>
 
+          <p v-if="errorMsg" class="error-message">{{ errorMsg }}</p>
+          <p v-if="submitted" class="success-message">Booking confirmed! ID: {{ bookingId }}</p>
           <button class="btn" type="submit" :disabled="isSubmitting">
             {{ isSubmitting ? 'Submitting...' : 'Book Now' }}
           </button>
@@ -89,25 +91,30 @@
 
 <script setup>
 import { reactive, ref } from 'vue';
-import { useAuth } from '@/composables/useAuth'; // Import useAuth
+import { useRoute, useRouter } from 'vue-router';
+import { useAuth } from '@/composables/useAuth';
 
 const { token } = useAuth();
+const route = useRoute();
+const router = useRouter();
 
 const form = reactive({
   firstName: '', lastName: '', email: '', address: '',
   cardNumber: '', expiry: '', cvv: '',
-  hotel: '', rooms: 1, checkin: '', checkout: ''
+  hotel: route.query.destination || '', rooms: 1, checkin: '', checkout: ''
 });
 
 const submitted = ref(false);
 const isSubmitting = ref(false);
 const bookingId = ref('');
+const errorMsg = ref('');
 
 async function submitBooking() {
   if (!token.value) {
-    alert('You must be logged in to make a booking.');
+    router.push({ path: '/login', query: { redirect: '/bookhere' } });
     return;
   }
+  errorMsg.value = '';
   isSubmitting.value = true;
   try {
     const response = await fetch(`${import.meta.env.VITE_API_URL}/api/bookings`, {
@@ -123,7 +130,7 @@ async function submitBooking() {
     submitted.value = true;
     bookingId.value = data.booking.bookingId;
   } catch (error) {
-    alert(error.message);
+    errorMsg.value = error.message;
   } finally {
     isSubmitting.value = false;
   }
@@ -193,5 +200,24 @@ input {
 .summary-panel p {
   font-size: 1.1rem;
   margin-bottom: 10px;
+}
+
+.error-message {
+  color: #d9534f;
+  font-weight: 500;
+  margin-bottom: 12px;
+}
+
+.success-message {
+  color: #2d7a2d;
+  font-weight: 600;
+  margin-bottom: 12px;
+  background: #e8f5e9;
+  padding: 10px 14px;
+  border-radius: 8px;
+}
+
+input {
+  box-sizing: border-box;
 }
 </style>
