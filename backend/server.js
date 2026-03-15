@@ -4,11 +4,11 @@ const bodyParser = require('body-parser');
 const jwt = require('jsonwebtoken');
 
 const app = express();
-const PORT = 3000;
-const JWT_SECRET = 'your-super-secret-key-that-is-long-and-secure';
+const PORT = process.env.PORT || 3000;
+const JWT_SECRET = process.env.JWT_SECRET || 'your-super-secret-key-that-is-long-and-secure';
 
 // Middleware
-app.use(cors());
+app.use(cors({ origin: process.env.FRONTEND_URL || '*' }));
 app.use(bodyParser.json());
 
 // --- Mock Databases (Server Memory) ---

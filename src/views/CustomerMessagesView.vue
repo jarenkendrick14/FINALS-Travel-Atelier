@@ -38,7 +38,7 @@ onMounted(async () => {
   }
 
   try {
-    const response = await fetch('http://localhost:3000/api/messages', {
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/api/messages`, {
       headers: { 'Authorization': `Bearer ${token.value}` }
     });
     if (!response.ok) {

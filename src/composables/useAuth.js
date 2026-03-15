@@ -25,7 +25,7 @@ export function useAuth() {
 
   const login = async (credentials) => {
     // Make API call to the backend
-    const response = await fetch('http://localhost:3000/api/login', {
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/api/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
