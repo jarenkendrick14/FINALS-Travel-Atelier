@@ -12,8 +12,8 @@
           <li><RouterLink to="/about">About</RouterLink></li>
           <li><RouterLink to="/contact">Contact</RouterLink></li>
           
-          <!-- Conditionally show these links only if logged in -->
-          <template v-if="isAuthenticated">
+          <!-- Conditionally show these links only for admins -->
+          <template v-if="isAdmin">
             <li><RouterLink to="/customer-list">Customer List</RouterLink></li>
             <li><RouterLink to="/customer-messages">Customer Messages</RouterLink></li>
           </template>
@@ -37,7 +37,7 @@ import Logo from './Logo.vue';
 
 const route = useRoute();
 const router = useRouter();
-const { isAuthenticated, logout } = useAuth();
+const { isAuthenticated, isAdmin, logout } = useAuth();
 
 const headerClass = computed(() => {
   return route.meta.navColor === 'blue' ? 'header-blue' : 'header-yellow';

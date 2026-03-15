@@ -13,7 +13,8 @@ app.use(bodyParser.json());
 
 // --- Mock Databases (Server Memory) ---
 const users = [
-  { id: 1, email: 'user@example.com', password: 'password', firstName: 'John', lastName: 'Doe' },
+  { id: 1, email: 'admin@example.com', password: 'admin123', firstName: 'Admin', lastName: 'User', role: 'admin' },
+  { id: 2, email: 'user@example.com', password: 'password', firstName: 'John', lastName: 'Doe', role: 'user' },
 ];
 let bookings = [];
 let messages = [
@@ -37,6 +38,14 @@ const verifyToken = (req, res, next) => {
   }
 };
 
+const verifyAdmin = (req, res, next) => {
+  if (req.user && req.user.role === 'admin') {
+    next();
+  } else {
+    res.sendStatus(403); // Forbidden
+  }
+};
+
 
 // --- API Endpoints ---
 
@@ -45,7 +54,7 @@ app.post('/api/login', (req, res) => {
   const { email, password } = req.body;
   const user = users.find(u => u.email === email);
   if (user && user.password === password) {
-    const token = jwt.sign({ id: user.id, email: user.email }, JWT_SECRET, { expiresIn: '1h' });
+    const token = jwt.sign({ id: user.id, email: user.email, role: user.role }, JWT_SECRET, { expiresIn: '1h' });
     res.json({ success: true, token });
   } else {
     res.status(401).json({ success: false, message: 'Invalid email or password.' });
@@ -61,10 +70,10 @@ app.post('/api/register', (req, res) => {
   if (users.some(user => user.email === email)) {
     return res.status(409).json({ success: false, message: 'An account with this email already exists.' });
   }
-  const newUser = { id: Date.now(), firstName, lastName, email, password };
+  const newUser = { id: Date.now(), firstName, lastName, email, password, role: 'user' };
   users.push(newUser);
   console.log('New user registered:', newUser);
-  const token = jwt.sign({ id: newUser.id, email: newUser.email }, JWT_SECRET, { expiresIn: '1h' });
+  const token = jwt.sign({ id: newUser.id, email: newUser.email, role: newUser.role }, JWT_SECRET, { expiresIn: '1h' });
   res.status(201).json({ success: true, token });
 });
 
@@ -77,10 +86,16 @@ app.post('/api/bookings', verifyToken, (req, res) => {
   res.status(201).json({ success: true, message: 'Booking confirmed!', booking: newBooking });
 });
 
-// GET /api/messages
-app.get('/api/messages', (req, res) => {
+// GET /api/messages (Admin only)
+app.get('/api/messages', verifyToken, verifyAdmin, (req, res) => {
   const sortedMessages = messages.sort((a, b) => new Date(b.dateSent) - new Date(a.dateSent));
   res.json(sortedMessages);
+});
+
+// GET /api/customers (Admin only)
+app.get('/api/customers', verifyToken, verifyAdmin, (req, res) => {
+  const safeUsers = users.map(({ password, ...user }) => user);
+  res.json(safeUsers);
 });
 
 // POST /api/contact-messages

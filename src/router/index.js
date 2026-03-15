@@ -49,13 +49,13 @@ const router = createRouter({
       path: '/customer-list',
       name: 'customer-list',
       component: CustomerListView,
-      meta: { navColor: 'yellow', requiresAuth: true } // Mark as protected
+      meta: { navColor: 'yellow', requiresAuth: true, requiresAdmin: true }
     },
     {
       path: '/customer-messages',
       name: 'customer-messages',
       component: CustomerMessagesView,
-      meta: { navColor: 'yellow', requiresAuth: true } // Mark as protected
+      meta: { navColor: 'yellow', requiresAuth: true, requiresAdmin: true }
     },
     {
       path: '/login',
@@ -75,14 +75,15 @@ const router = createRouter({
 
 // Navigation Guard - This runs before every route change.
 router.beforeEach((to, from, next) => {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, isAdmin } = useAuth();
   const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
+  const requiresAdmin = to.matched.some(record => record.meta.requiresAdmin);
 
   if (requiresAuth && !isAuthenticated.value) {
-    // If route requires auth and user is not logged in, redirect to login page.
     next({ name: 'login' });
+  } else if (requiresAdmin && !isAdmin.value) {
+    next({ name: 'home' });
   } else {
-    // Otherwise, allow the navigation.
     next();
   }
 });

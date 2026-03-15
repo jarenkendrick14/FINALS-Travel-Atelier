@@ -38,8 +38,9 @@ onMounted(async () => {
   }
 
   try {
-    // **THE IMPORTANT CHANGE IS HERE**
-    const response = await fetch('http://localhost:3000/api/messages');
+    const response = await fetch('http://localhost:3000/api/messages', {
+      headers: { 'Authorization': `Bearer ${token.value}` }
+    });
     if (!response.ok) {
       throw new Error('Failed to load messages from the server.');
     }

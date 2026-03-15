@@ -34,15 +34,19 @@
 
 <script setup>
 import { ref, onMounted, computed } from 'vue';
+import { useAuth } from '@/composables/useAuth';
 
 const customers = ref([]);
 const searchTerm = ref('');
+const { token } = useAuth();
 
 onMounted(async () => {
   try {
-    const response = await fetch('/api/customers.json');
+    const response = await fetch('http://localhost:3000/api/customers', {
+      headers: { 'Authorization': `Bearer ${token.value}` }
+    });
     if (!response.ok) {
-      throw new Error('Network response was not ok');
+      throw new Error('Failed to load customers from the server.');
     }
     customers.value = await response.json();
   } catch (error) {

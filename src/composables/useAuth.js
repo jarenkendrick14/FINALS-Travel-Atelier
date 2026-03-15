@@ -1,9 +1,11 @@
-import { ref, readonly } from 'vue';
+import { ref, readonly, computed } from 'vue';
 
 // State is initialized by checking localStorage for an existing token
 const token = ref(localStorage.getItem('authToken'));
 const user = ref(token.value ? JSON.parse(atob(token.value.split('.')[1])) : null); // Decode user info from token
 const isAuthenticated = ref(!!token.value);
+
+const isAdmin = computed(() => user.value?.role === 'admin');
 
 export function useAuth() {
   const setAuth = (newToken) => {
@@ -55,6 +57,7 @@ export function useAuth() {
 
   return {
     isAuthenticated: readonly(isAuthenticated),
+    isAdmin: readonly(isAdmin),
     user: readonly(user),
     token: readonly(token), // Expose token for API calls
     login,
