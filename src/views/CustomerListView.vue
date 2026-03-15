@@ -5,27 +5,28 @@
       <div class="search-bar-wrapper">
         <input type="text" v-model="searchTerm" placeholder="Search by name or email..." class="search-input"/>
       </div>
-      <div v-if="filteredCustomers.length > 0" class="customer-table">
+      <div v-if="isLoading" class="spinner-wrapper"><div class="spinner"></div></div>
+      <div v-else-if="filteredCustomers.length > 0" class="customer-table">
         <table>
           <thead>
             <tr>
-              <th>Name</th>
-              <th>Email</th>
+              <th @click="setSort('name')" class="sortable">Name <span class="sort-icon">{{ sortIcon('name') }}</span></th>
+              <th @click="setSort('email')" class="sortable">Email <span class="sort-icon">{{ sortIcon('email') }}</span></th>
               <th>Address</th>
-              <th>Join Date</th>
+              <th @click="setSort('joinDate')" class="sortable">Join Date <span class="sort-icon">{{ sortIcon('joinDate') }}</span></th>
             </tr>
           </thead>
           <tbody>
-            <tr v-for="customer in filteredCustomers" :key="customer.id">
+            <tr v-for="customer in sortedCustomers" :key="customer.id">
               <td>{{ customer.firstName }} {{ customer.lastName }}</td>
               <td>{{ customer.email }}</td>
               <td>{{ customer.address }}</td>
-              <td>{{ new Date(customer.joinDate).toLocaleDateString() }}</td>
+              <td>{{ customer.joinDate ? new Date(customer.joinDate).toLocaleDateString() : '—' }}</td>
             </tr>
           </tbody>
         </table>
       </div>
-      <div v-else class="no-results">
+      <div v-else-if="!isLoading" class="no-results">
         <p>No customers found.</p>
       </div>
     </div>
@@ -36,8 +37,26 @@
 import { ref, onMounted, computed } from 'vue';
 import { useAuth } from '@/composables/useAuth';
 
+const sortKey = ref('');
+const sortDir = ref('asc');
+
+const setSort = (key) => {
+  if (sortKey.value === key) {
+    sortDir.value = sortDir.value === 'asc' ? 'desc' : 'asc';
+  } else {
+    sortKey.value = key;
+    sortDir.value = 'asc';
+  }
+};
+
+const sortIcon = (key) => {
+  if (sortKey.value !== key) return '↕';
+  return sortDir.value === 'asc' ? '↑' : '↓';
+};
+
 const customers = ref([]);
 const searchTerm = ref('');
+const isLoading = ref(true);
 const { token } = useAuth();
 
 onMounted(async () => {
@@ -45,24 +64,40 @@ onMounted(async () => {
     const response = await fetch(`${import.meta.env.VITE_API_URL}/api/customers`, {
       headers: { 'Authorization': `Bearer ${token.value}` }
     });
-    if (!response.ok) {
-      throw new Error('Failed to load customers from the server.');
-    }
+    if (!response.ok) throw new Error('Failed to load customers from the server.');
     customers.value = await response.json();
   } catch (error) {
     console.error('Failed to fetch customers:', error);
+  } finally {
+    isLoading.value = false;
   }
 });
 
 const filteredCustomers = computed(() => {
-  if (!searchTerm.value) {
-    return customers.value;
-  }
-  const lowerCaseSearch = searchTerm.value.toLowerCase();
-  return customers.value.filter(customer =>
-    `${customer.firstName} ${customer.lastName}`.toLowerCase().includes(lowerCaseSearch) ||
-    customer.email.toLowerCase().includes(lowerCaseSearch)
+  if (!searchTerm.value) return customers.value;
+  const lower = searchTerm.value.toLowerCase();
+  return customers.value.filter(c =>
+    `${c.firstName} ${c.lastName}`.toLowerCase().includes(lower) ||
+    c.email.toLowerCase().includes(lower)
   );
+});
+
+const sortedCustomers = computed(() => {
+  if (!sortKey.value) return filteredCustomers.value;
+  return [...filteredCustomers.value].sort((a, b) => {
+    let valA = sortKey.value === 'name' ? `${a.firstName} ${a.lastName}` : a[sortKey.value] ?? '';
+    let valB = sortKey.value === 'name' ? `${b.firstName} ${b.lastName}` : b[sortKey.value] ?? '';
+    if (sortKey.value === 'joinDate') {
+      valA = new Date(valA).getTime();
+      valB = new Date(valB).getTime();
+    } else {
+      valA = String(valA).toLowerCase();
+      valB = String(valB).toLowerCase();
+    }
+    if (valA < valB) return sortDir.value === 'asc' ? -1 : 1;
+    if (valA > valB) return sortDir.value === 'asc' ? 1 : -1;
+    return 0;
+  });
 });
 </script>
 
@@ -116,6 +151,21 @@ th {
   font-weight: 600;
 }
 
+th.sortable {
+  cursor: pointer;
+  user-select: none;
+}
+
+th.sortable:hover {
+  background-color: #163f80;
+}
+
+.sort-icon {
+  font-size: 0.8rem;
+  margin-left: 4px;
+  opacity: 0.8;
+}
+
 tbody tr:nth-child(even) {
   background-color: #f9f9f9;
 }
@@ -129,5 +179,24 @@ tbody tr:hover {
   margin-top: 50px;
   font-size: 1.2rem;
   color: #777;
+}
+
+.spinner-wrapper {
+  display: flex;
+  justify-content: center;
+  padding: 60px 0;
+}
+
+.spinner {
+  width: 48px;
+  height: 48px;
+  border: 5px solid #ddd;
+  border-top-color: var(--yinmn-blue);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }
 </style>

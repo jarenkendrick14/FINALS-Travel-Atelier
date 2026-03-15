@@ -53,21 +53,30 @@
 
           <div class="form-group">
             <label>Check-in Date</label>
-            <input type="date" v-model="form.checkin" required />
+            <input type="date" v-model="form.checkin" :max="form.checkout || undefined" required />
           </div>
 
-          <button class="btn" type="submit">Book Now</button>
+          <div class="form-group">
+            <label>Check-out Date</label>
+            <input type="date" v-model="form.checkout" :min="form.checkin || undefined" required />
+          </div>
+
+          <button class="btn" type="submit" :disabled="isSubmitting">
+            {{ isSubmitting ? 'Submitting...' : 'Book Now' }}
+          </button>
         </form>
 
         <!-- Summary Panel -->
         <div class="summary-panel">
           <h2>Summary</h2>
           <div v-if="submitted">
+            <p><strong>Booking ID:</strong> {{ bookingId }}</p>
             <p><strong>Name:</strong> {{ form.firstName }} {{ form.lastName }}</p>
             <p><strong>Email:</strong> {{ form.email }}</p>
             <p><strong>Hotel:</strong> {{ form.hotel }}</p>
             <p><strong>Rooms:</strong> {{ form.rooms }}</p>
             <p><strong>Check-in:</strong> {{ form.checkin }}</p>
+            <p><strong>Check-out:</strong> {{ form.checkout }}</p>
           </div>
           <div v-else>
             <p>Fill out the form to see your booking summary.</p>
@@ -82,57 +91,41 @@
 import { reactive, ref } from 'vue';
 import { useAuth } from '@/composables/useAuth'; // Import useAuth
 
-const { token } = useAuth(); // Get the auth token
+const { token } = useAuth();
 
 const form = reactive({
-  firstName: '',
-  lastName: '',
-  email: '',
-  address: '',
-  cardNumber: '',
-  expiry: '',
-  cvv: '',
-  hotel: '',
-  rooms: 1,
-  checkin: ''
+  firstName: '', lastName: '', email: '', address: '',
+  cardNumber: '', expiry: '', cvv: '',
+  hotel: '', rooms: 1, checkin: '', checkout: ''
 });
 
 const submitted = ref(false);
+const isSubmitting = ref(false);
+const bookingId = ref('');
 
 async function submitBooking() {
-  // Check if token exists
   if (!token.value) {
     alert('You must be logged in to make a booking.');
     return;
   }
-
+  isSubmitting.value = true;
   try {
     const response = await fetch(`${import.meta.env.VITE_API_URL}/api/bookings`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        // **IMPORTANT**: Include the JWT for authentication
         'Authorization': `Bearer ${token.value}`
       },
       body: JSON.stringify(form)
     });
-
     const data = await response.json();
-
-    if (!response.ok) {
-      // Handle potential auth errors (e.g., expired token)
-      throw new Error(data.message || 'Booking failed. Please try again.');
-    }
-
-    // Success!
+    if (!response.ok) throw new Error(data.message || 'Booking failed. Please try again.');
     submitted.value = true;
-    alert('Booking submitted successfully! Confirmation: ' + data.booking.bookingId);
-    
-    // Optionally reset the form or redirect
-    // Object.keys(form).forEach(key => form[key] = ''); 
-
+    bookingId.value = data.booking.bookingId;
   } catch (error) {
     alert(error.message);
+  } finally {
+    isSubmitting.value = false;
   }
 }
 </script>

@@ -9,8 +9,8 @@ import BookHereView from '../views/BookHere.vue'
 import CustomerListView from '../views/CustomerListView.vue'
 import CustomerMessagesView from '../views/CustomerMessagesView.vue'
 import LoginView from '../views/LoginView.vue'
-// --- YOU ARE MISSING THIS IMPORT ---
-import RegisterView from '../views/RegisterView.vue' // Import the new Register view
+import RegisterView from '../views/RegisterView.vue'
+import MyBookingsView from '../views/MyBookingsView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -44,6 +44,12 @@ const router = createRouter({
       name: 'bookhere',
       component: BookHereView,
       meta: { navColor: 'yellow' } 
+    },
+    {
+      path: '/my-bookings',
+      name: 'my-bookings',
+      component: MyBookingsView,
+      meta: { navColor: 'yellow', requiresAuth: true }
     },
     {
       path: '/customer-list',

@@ -5,15 +5,20 @@
       <div class="search-bar-wrapper">
         <input type="text" v-model="searchTerm" placeholder="Search by name, email, or message..." class="search-input"/>
       </div>
-      <div v-if="filteredMessages.length > 0" class="messages-grid">
-        <div v-for="message in filteredMessages" :key="message.id" class="message-card">
-          <h3>From: {{ message.name }}</h3>
+      <div v-if="isLoading" class="spinner-wrapper"><div class="spinner"></div></div>
+      <div v-else-if="filteredMessages.length > 0" class="messages-grid">
+        <div v-for="message in filteredMessages" :key="message.id" class="message-card" :class="{ unread: !message.read }">
+          <div class="card-top">
+            <h3>From: {{ message.name }}</h3>
+            <span v-if="!message.read" class="badge-unread">New</span>
+          </div>
           <p class="email"><strong>Email:</strong> {{ message.email }}</p>
           <p class="date"><strong>Sent:</strong> {{ new Date(message.dateSent).toLocaleString() }}</p>
           <p class="message-content">{{ message.message }}</p>
+          <button v-if="!message.read" class="btn-mark-read" @click="markRead(message)">Mark as Read</button>
         </div>
       </div>
-      <div v-else class="no-results">
+      <div v-else-if="!isLoading" class="no-results">
         <p>No messages found.</p>
       </div>
     </div>
@@ -28,6 +33,18 @@ const searchTerm = ref('');
 const isLoading = ref(true);
 const errorMsg = ref('');
 const { token } = useAuth();
+
+const markRead = async (message) => {
+  try {
+    await fetch(`${import.meta.env.VITE_API_URL}/api/messages/${message.id}/read`, {
+      method: 'PATCH',
+      headers: { 'Authorization': `Bearer ${token.value}` }
+    });
+    message.read = true;
+  } catch (error) {
+    console.error('Failed to mark message as read:', error);
+  }
+};
 
 onMounted(async () => {
   if (!token.value) {
@@ -108,6 +125,44 @@ h1 {
   border-left: 5px solid var(--amber);
 }
 
+.message-card.unread {
+  border-left-color: var(--yinmn-blue);
+  background-color: #f0f5ff;
+}
+
+.card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.badge-unread {
+  background-color: var(--yinmn-blue);
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 2px 10px;
+  border-radius: 50px;
+}
+
+.btn-mark-read {
+  margin-top: 14px;
+  background: none;
+  border: 1px solid var(--yinmn-blue);
+  color: var(--yinmn-blue);
+  padding: 6px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.btn-mark-read:hover {
+  background-color: var(--yinmn-blue);
+  color: white;
+}
+
 .message-card h3 {
   font-size: 1.2rem;
   margin-bottom: 10px;
@@ -130,5 +185,24 @@ h1 {
   margin-top: 50px;
   font-size: 1.2rem;
   color: #777;
+}
+
+.spinner-wrapper {
+  display: flex;
+  justify-content: center;
+  padding: 60px 0;
+}
+
+.spinner {
+  width: 48px;
+  height: 48px;
+  border: 5px solid #ddd;
+  border-top-color: var(--yinmn-blue);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }
 </style>

@@ -10,11 +10,16 @@
           </div>
         </div>
 
+        <!-- Loading spinner -->
+        <div v-if="isLoading" class="spinner-wrapper">
+          <div class="spinner"></div>
+        </div>
+
         <!-- Destinations Grid with Staggered Animation -->
-        <TransitionGroup 
-          v-if="filteredDestinations.length > 0" 
-          tag="div" 
-          name="card-list" 
+        <TransitionGroup
+          v-else-if="filteredDestinations.length > 0"
+          tag="div"
+          name="card-list"
           class="destinations-grid"
           appear
         >
@@ -30,8 +35,8 @@
           </div>
         </TransitionGroup>
 
-         <div v-else class="no-results">
-            <p>No destinations found matching your search.</p>
+        <div v-else-if="!isLoading" class="no-results">
+          <p>No destinations found matching your search.</p>
         </div>
 
         <!-- Call to Action -->
@@ -50,7 +55,8 @@ import { RouterLink, useRoute } from 'vue-router'; // Import useRoute
 
 const allDestinations = ref([]);
 const searchTerm = ref('');
-const route = useRoute(); // Get access to the current route details
+const isLoading = ref(true);
+const route = useRoute();
 
 function getImageUrl(filename) {
   return new URL(`../assets/destinations/${filename}`, import.meta.url).href
@@ -65,12 +71,12 @@ onMounted(async () => {
   // Fetch the destination data (existing logic)
   try {
     const response = await fetch('/api/destinations.json');
-    if (!response.ok) {
-        throw new Error('Network response was not ok');
-    }
+    if (!response.ok) throw new Error('Network response was not ok');
     allDestinations.value = await response.json();
   } catch(error) {
     console.error("Failed to fetch destinations:", error);
+  } finally {
+    isLoading.value = false;
   }
 });
 
@@ -232,5 +238,24 @@ const filteredDestinations = computed(() => {
   padding: 40px 0;
   font-size: 1.2rem;
   color: #777;
+}
+
+.spinner-wrapper {
+  display: flex;
+  justify-content: center;
+  padding: 60px 0;
+}
+
+.spinner {
+  width: 48px;
+  height: 48px;
+  border: 5px solid #ddd;
+  border-top-color: var(--yinmn-blue);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }
 </style>

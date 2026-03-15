@@ -23,7 +23,7 @@ const users = [
 ];
 let bookings = [];
 let messages = [
-  { id: 201, name: "Alice Johnson", email: "alice.j@example.com", message: "Initial test message.", dateSent: "2023-10-28T10:30:00Z" }
+  { id: 201, name: "Alice Johnson", email: "alice.j@example.com", message: "Initial test message.", dateSent: "2023-10-28T10:30:00Z", read: false }
 ];
 
 // --- JWT Authentication Middleware ---
@@ -93,8 +93,22 @@ app.post('/api/bookings', verifyToken, (req, res) => {
 
 // GET /api/messages (Admin only)
 app.get('/api/messages', verifyToken, verifyAdmin, (req, res) => {
-  const sortedMessages = messages.sort((a, b) => new Date(b.dateSent) - new Date(a.dateSent));
+  const sortedMessages = [...messages].sort((a, b) => new Date(b.dateSent) - new Date(a.dateSent));
   res.json(sortedMessages);
+});
+
+// PATCH /api/messages/:id/read (Admin only)
+app.patch('/api/messages/:id/read', verifyToken, verifyAdmin, (req, res) => {
+  const msg = messages.find(m => m.id === parseInt(req.params.id));
+  if (!msg) return res.status(404).json({ message: 'Message not found.' });
+  msg.read = true;
+  res.json({ success: true });
+});
+
+// GET /api/my-bookings (Protected)
+app.get('/api/my-bookings', verifyToken, (req, res) => {
+  const userBookings = bookings.filter(b => b.userId === req.user.id);
+  res.json(userBookings);
 });
 
 // GET /api/customers (Admin only)
@@ -109,7 +123,7 @@ app.post('/api/contact-messages', (req, res) => {
   if (!name || !email || !message) {
     return res.status(400).json({ success: false, message: 'All fields are required.' });
   }
-  const newMessage = { id: Date.now(), name, email, message, dateSent: new Date().toISOString() };
+  const newMessage = { id: Date.now(), name, email, message, dateSent: new Date().toISOString(), read: false };
   messages.push(newMessage);
   console.log('New contact message received:', newMessage);
   res.status(201).json({ success: true, message: 'Your message has been sent successfully!' });
