@@ -4,12 +4,12 @@
   <div class="hero-wrapper">
     <div class="hero-overlay"></div>
     <div class="hero-content">
-      <p class="hero-eyebrow">✦ Premium Travel Experiences</p>
+      <p class="hero-eyebrow">— Premium Travel Experiences —</p>
       <h1>Your Journey<br><span class="accent">Starts Here</span></h1>
       <p class="hero-sub">Discover handpicked destinations crafted for the modern explorer.</p>
       <form @submit.prevent="handleSearch" class="search-container">
         <div class="search-bar">
-          <span class="search-icon">⌕</span>
+          <span class="search-icon"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg></span>
           <input type="text" v-model="searchQuery" placeholder="Search destinations like 'Paris', 'Japan'..." />
           <button type="submit" class="search-btn">Search</button>
         </div>
@@ -20,7 +20,7 @@
     </div>
     <div class="hero-scroll-hint">
       <span>Scroll to explore</span>
-      <div class="scroll-arrow">↓</div>
+      <div class="scroll-arrow"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg></div>
     </div>
   </div>
 
@@ -52,7 +52,7 @@
         >
           <img :src="getImageUrl(dest.imageUrl)" :alt="dest.name" />
           <div class="featured-card-overlay">
-            <p class="featured-location">📍 {{ dest.location }}</p>
+            <p class="featured-location"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg> {{ dest.location }}</p>
             <h3>{{ dest.name }}</h3>
             <span class="featured-cta">Book Now →</span>
           </div>
@@ -129,7 +129,7 @@ const popularTags = ['Singapore', 'Paris', 'Japan', 'Italy', 'Australia'];
 const stats = [
   { value: '6+', label: 'Destinations' },
   { value: '500+', label: 'Happy Travelers' },
-  { value: '4.9★', label: 'Average Rating' },
+  { value: '4.9 / 5', label: 'Average Rating' },
   { value: '24/7', label: 'Customer Support' },
 ];
 
@@ -277,10 +277,11 @@ h1 .accent {
 }
 
 .search-icon {
-  font-size: 1.4rem;
   color: #aaa;
-  margin-right: 10px;
+  margin-right: 4px;
   flex-shrink: 0;
+  display: flex;
+  align-items: center;
 }
 
 .search-bar input {
@@ -596,11 +597,11 @@ h1 .accent {
 .steps-grid::before {
   content: '';
   position: absolute;
-  top: 48px;
-  left: calc(16.66% + 20px);
-  right: calc(16.66% + 20px);
-  height: 2px;
-  background: rgba(255,255,255,0.15);
+  top: 74px;
+  left: 16.67%;
+  right: 16.67%;
+  height: 1px;
+  background: rgba(255,255,255,0.2);
   z-index: 0;
 }
 

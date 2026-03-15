@@ -220,4 +220,19 @@ input {
 input {
   box-sizing: border-box;
 }
+
+@media (max-width: 768px) {
+  .overlay {
+    padding: 20px;
+    margin: 0 16px;
+  }
+
+  .booking-form, .summary-panel {
+    flex: 1 1 100%;
+  }
+
+  .booking-form h2, .summary-panel h2 {
+    font-size: 1.5rem;
+  }
+}
 </style>

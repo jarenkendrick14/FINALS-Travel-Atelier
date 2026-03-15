@@ -199,4 +199,9 @@ input {
 .login-link a:hover {
   text-decoration: underline;
 }
+
+@media (max-width: 480px) {
+  .register-container { padding: 28px 18px; }
+  h2 { font-size: 1.6rem; }
+}
 </style>

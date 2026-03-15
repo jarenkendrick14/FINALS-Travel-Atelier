@@ -171,4 +171,9 @@ textarea {
   color: #721c24;
   border: 1px solid #f5c6cb;
 }
+
+@media (max-width: 600px) {
+  h1 { font-size: 2rem; }
+  .form-container { padding: 24px 16px; }
+}
 </style>

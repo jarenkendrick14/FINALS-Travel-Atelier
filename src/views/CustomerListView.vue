@@ -50,7 +50,7 @@ const setSort = (key) => {
 };
 
 const sortIcon = (key) => {
-  if (sortKey.value !== key) return '↕';
+  if (sortKey.value !== key) return '⇅';
   return sortDir.value === 'asc' ? '↑' : '↓';
 };
 

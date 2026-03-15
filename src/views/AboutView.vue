@@ -35,7 +35,12 @@ p {
   color: #333;
 }
 .contact .email {
-    font-size: 1.5rem;
-    margin: 15px 0;
+  font-size: 1.5rem;
+  margin: 15px 0;
+}
+
+@media (max-width: 600px) {
+  h1, h2 { font-size: 2rem; }
+  .about-us { padding: 50px 0; }
 }
 </style>
