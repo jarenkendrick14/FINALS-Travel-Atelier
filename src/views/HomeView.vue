@@ -1,4 +1,5 @@
 <template>
+  <div>
   <!-- ===== HERO ===== -->
   <div class="hero-wrapper">
     <div class="hero-overlay"></div>
@@ -112,6 +113,7 @@
       </div>
     </div>
   </section>
+  </div>
 </template>
 
 <script setup>
